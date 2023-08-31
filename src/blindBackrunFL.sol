@@ -3,8 +3,7 @@ pragma solidity ^0.8.0;
 import "openzeppelin/token/ERC20/IERC20.sol";
 import "openzeppelin/access/Ownable.sol";
 import "openzeppelin/utils/math/SafeMath.sol";
-import "forge-std/console.sol";
-import "./BlindBackrunDebug.sol";
+import "./BlindBackrun.sol";
 
 interface IVault {
     function flashLoan(
@@ -57,7 +56,6 @@ contract BlindBackrunFL is BlindBackrun, IFlashLoanRecipient {
             msg.sender == address(vault),
             "FlashLoanRecipient: caller is not the vault"
         );
-        console.log("receiveFlashLoan");
 
         (
             address firstPairAddress,
@@ -68,7 +66,8 @@ contract BlindBackrunFL is BlindBackrun, IFlashLoanRecipient {
         executeArbitrage(
             secondPairAddress,
             firstPairAddress,
-            percentageToPayToCoinbase
+            percentageToPayToCoinbase,
+            address(this)
         );
 
         IWETH(WETH_ADDRESS).transfer(
